@@ -71,9 +71,14 @@ namespace Lotusim
 
         private void Start()
         {
-            m_interface = LotusimInterfaceFactory.CreateInterface(selectedInterfaceType);
+            // Single start with the configured namespace. CreateInterface already calls
+            // iface.Start(rosNamespace) internally, so we pass m_namespace here instead of
+            // calling Start() a second time. The previous double-start (CreateInterface()
+            // -> Start("") then Start(m_namespace)) opened a first connection on the empty
+            // namespace and abandoned it, churning the TCP socket (ThreadAbortException,
+            // half-open sockets, wedged port proxy) and subscribing under the wrong namespace.
+            m_interface = LotusimInterfaceFactory.CreateInterface(selectedInterfaceType, m_namespace);
             UpdateVesselsList();
-            m_interface.Start(m_namespace);
         }
 
         private void Update()
