@@ -81,11 +81,12 @@ namespace Com.MyCompany.MyGame
 			//	return;
 			//}
 
-			// in case we started this demo with the wrong scene being active, simply load the menu scene
+			// DEMO BYPASS: upstream bounces to the "Launcher" scene when Photon isn't connected,
+			// which reloads the scene and destroys the LotusimConnector (the render receiver) a
+			// frame after Play -> nothing ever renders when defenseScenario is run standalone.
+			// Stay in this scene and just skip the Photon multiplayer player setup below.
 			if (!PhotonNetwork.IsConnected)
 			{
-				SceneManager.LoadScene("Launcher");
-
 				return;
 			}
 
