@@ -17,6 +17,16 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: be314f4f1b02c251d86d1aeb9f1532d9
   m_SerializeEntries:
+  - m_GUID: 0009a04132f0b46b6896ede86ea0f518
+    m_Address: commando
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 08d85bc1fbd83ba42a694e4f7627fafe
+    m_Address: pha
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1534544eb72990752a85f0976fee408f
     m_Address: mine
     m_ReadOnly: 0
@@ -27,23 +37,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6fb7c7eb2a4b24aeabfb5daa8c074147
+    m_Address: focus_v2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 724f31ebea396e5c2a33bd05ff48d483
     m_Address: fremm
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 08d85bc1fbd83ba42a694e4f7627fafe
-    m_Address: pha
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bc01b4aff318f784883f71e063fb678c
-    m_Address: wamv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0009a04132f0b46b6896ede86ea0f518
-    m_Address: commando
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -57,9 +57,14 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc01b4aff318f784883f71e063fb678c
+    m_Address: wamv
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: dff253635c443ea09ac6aabf80e24a23, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: ca8c8274c347b9016ad612d26b5cb200, type: 2}
     - {fileID: 11400000, guid: 484ee0d31d5c7f6b8b4a6714320519d3, type: 2}
+    - {fileID: 11400000, guid: ca8c8274c347b9016ad612d26b5cb200, type: 2}
