@@ -15,6 +15,9 @@
 // and namespace directly in the Inspector, automatically applying changes and triggering relevant callbacks.
 // --------------------------------------------------------------------------------------------------------------------
 
+// Editor-only code outside an Editor/ folder: without this guard the class is
+// compiled into standalone players, where UnityEditor does not exist (CS0246).
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
 using Lotusim;
@@ -78,3 +81,4 @@ public class LotusimInterfaceEditor : Editor
         return LotusimInterfaceFactory.GetAvailableInterfaceTypes().ToList();
     }
 }
+#endif
