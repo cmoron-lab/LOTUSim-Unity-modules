@@ -33,6 +33,9 @@ public class ActuatorAnimator : MonoBehaviour
     float _sailAngle, _rudderAngle;  // currently displayed local Y angles (deg)
     Quaternion _boomRest, _sailRest, _rudderRest;
 
+    // Read by WakeEmitter: spares a second subscription and a duplicate parse.
+    public float RudderAngle => _rudderAngle;
+
     void Start()
     {
         _boom = FindPart("Boom");
