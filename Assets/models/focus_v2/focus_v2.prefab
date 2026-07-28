@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8166563492264476222}
   - component: {fileID: 3738984054295546491}
+  - component: {fileID: 7444668945654617084}
   m_Layer: 0
   m_Name: focus_v2
   m_TagString: Untagged
@@ -51,6 +52,27 @@ MonoBehaviour:
   rudderSlew: 180
   sailSign: 1
   rudderSign: 1
+--- !u!114 &7444668945654617084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1556450931131639875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4597a188350e823369f526eabd1cb2a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seaLevel: 0
+  surfaceOffset: 0.005
+  refSpeed: 0.5
+  minSpeed: 0.03
+  maxStep: 0.25
+  minVertexDistance: 0.03
+  wakeWidth: 0.3
+  lifetime: 6
+  smoothing: 0.15
 --- !u!1001 &397388324452538974
 PrefabInstance:
   m_ObjectHideFlags: 0
