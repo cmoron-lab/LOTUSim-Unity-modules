@@ -64,14 +64,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4597a188350e823369f526eabd1cb2a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seaLevel: 0
-  surfaceOffset: 0.005
   refSpeed: 0.5
   minSpeed: 0.03
   maxStep: 0.25
-  minVertexDistance: 0.03
-  wakeWidth: 0.3
-  lifetime: 6
+  emissionSpacing: 0.12
+  stampWidth: 0.18
+  stampLength: 0.3
+  lifetime: 5
+  wakeAngle: 19.5
+  projectorDepth: 1
   smoothing: 0.15
 --- !u!1001 &397388324452538974
 PrefabInstance:
