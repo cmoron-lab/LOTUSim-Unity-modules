@@ -3,56 +3,33 @@ using NUnit.Framework;
 
 public class WakeMathTests
 {
-    const float Ref = 3f;      // m/s, vitesse de normalisation
-    const float Max = 60f;     // particules/s à plein régime
-    const float MaxHelm = 35f; // deg, barre à fond
+    const float RefSpeed = 0.5f;
+    const float MaxWidth = 0.3f;
     const float Eps = 1e-4f;
 
-    [Test]
-    public void AucunDebitALArret()
+    [TestCase(0f, 0f)]
+    [TestCase(0.25f, 0.5f)]
+    [TestCase(0.5f, 1f)]
+    [TestCase(5f, 1f)]
+    public void SpeedFactorIsClamped(float speed, float expected)
     {
-        Assert.AreEqual(0f, WakeMath.WakeRate(0f, Ref, Max), Eps);
-        Assert.AreEqual(0f, WakeMath.BowRate(0f, Ref, Max), Eps);
-        Assert.AreEqual(0f, WakeMath.RudderRate(0f, Ref, MaxHelm, MaxHelm, Max), Eps);
+        Assert.AreEqual(expected, WakeMath.SpeedFactor(speed, RefSpeed), Eps);
+    }
+
+    [TestCase(0f, 0f)]
+    [TestCase(0.25f, 0.15f)]
+    [TestCase(0.5f, 0.3f)]
+    [TestCase(5f, 0.3f)]
+    public void WakeWidthTracksMeasuredSpeed(float speed, float expected)
+    {
+        Assert.AreEqual(expected,
+                        WakeMath.WakeWidth(speed, RefSpeed, MaxWidth), Eps);
     }
 
     [Test]
-    public void LeDebitCroitAvecLaVitesse()
+    public void InvalidCalibrationDisablesWidth()
     {
-        Assert.Less(WakeMath.WakeRate(1f, Ref, Max), WakeMath.WakeRate(2f, Ref, Max));
-        Assert.Less(WakeMath.BowRate(1f, Ref, Max), WakeMath.BowRate(2f, Ref, Max));
-    }
-
-    [Test]
-    public void LeDebitEstClampeAuDelaDeRefSpeed()
-    {
-        // Une survitesse ne doit pas faire exploser le nombre de particules.
-        Assert.AreEqual(Max, WakeMath.WakeRate(Ref * 10f, Ref, Max), Eps);
-        Assert.AreEqual(Max, WakeMath.BowRate(Ref * 10f, Ref, Max), Eps);
-    }
-
-    [Test]
-    public void LEtraveEstConvexeParRapportAuSillage()
-    {
-        // La loi carrée : à mi-vitesse l'étrave est en retrait, à pleine
-        // vitesse elle rejoint le sillage. C'est ce qui fait qu'un bateau
-        // rapide se lit comme rapide, et pas seulement comme en mouvement.
-        Assert.Less(WakeMath.BowRate(Ref / 2f, Ref, Max),
-                    WakeMath.WakeRate(Ref / 2f, Ref, Max));
-        Assert.AreEqual(WakeMath.WakeRate(Ref, Ref, Max),
-                        WakeMath.BowRate(Ref, Ref, Max), Eps);
-    }
-
-    [Test]
-    public void BarreAuCentreAucunRemous()
-    {
-        Assert.AreEqual(0f, WakeMath.RudderRate(Ref, Ref, 0f, MaxHelm, Max), Eps);
-    }
-
-    [Test]
-    public void LeRemousDeSafranExigeDuFlux()
-    {
-        // Barre à fond mais bateau à l'arrêt : pas d'eau qui passe, pas de remous.
-        Assert.AreEqual(0f, WakeMath.RudderRate(0f, Ref, MaxHelm, MaxHelm, Max), Eps);
+        Assert.AreEqual(0f, WakeMath.SpeedFactor(1f, 0f), Eps);
+        Assert.AreEqual(0f, WakeMath.WakeWidth(1f, RefSpeed, 0f), Eps);
     }
 }

@@ -1,143 +1,190 @@
 // Copyright (c) 2026 Cyril Moron — EPL-2.0
-// Sillage, écume d'étrave et remous de safran pour la regatta, pilotés par le
-// mouvement propre du bateau — aucune souscription ROS supplémentaire.
-// Attacher à la RACINE DU PREFAB focus_v2, à côté d'ActuatorAnimator : les
-// ancrages sont trouvés par nom, il n'y a rien à câbler.
-//
-// Les deux réglages qui font ou défont l'effet :
-//   - simulationSpace = World, sinon les particules suivent la coque et le
-//     "sillage" devient une écharpe collée au bateau ;
-//   - émetteurs clampés à seaLevel, sinon le sillage part en l'air dès que le
-//     bateau gîte — et il gîte beaucoup, c'est le sujet du scénario.
+// Continuous water-bound wake driven by the boat's own horizontal motion.
 using UnityEngine;
 
 public class WakeEmitter : MonoBehaviour
 {
-    public float seaLevel = 0f;         // plan d'eau de référence (monde)
-    public float refSpeed = 3f;         // m/s : débit plein à cette vitesse
-    public float wakeRate = 60f;        // particules/s max, 0 = émetteur éteint
-    public float bowRate = 40f;
-    public float rudderRate = 25f;
-    public float maxRudderDeg = 35f;    // barre à fond
-    public float particleSize = 0.12f;
-    public float lifetime = 4f;
-    public float smoothing = 0.15f;     // lissage de la vitesse (s)
+    public float seaLevel = 0f;
+    public float surfaceOffset = 0.005f;
+    public float refSpeed = 0.5f;
+    public float minSpeed = 0.03f;
+    public float maxStep = 0.25f;
+    public float minVertexDistance = 0.03f;
+    public float wakeWidth = 0.30f;
+    public float lifetime = 6f;
+    public float smoothing = 0.15f;
 
     const string MaterialName = "RegattaSpray";
+    const string FoamTextureProperty = "Texture2D_23DD87FD";
+    const int FoamTextureWidth = 128;
+    const int FoamTextureHeight = 64;
 
-    ParticleSystem _wake, _bow, _swirl;
-    Transform _hull, _bowNose, _rudder;
-    ActuatorAnimator _actuator;
+    static readonly Quaternion FlatRotation =
+        Quaternion.LookRotation(Vector3.up, Vector3.forward);
+
+    TrailRenderer _trail;
+    Transform _rudder;
+    Material _mat;
+    Texture2D _foam;
     Vector3 _lastPos;
     float _speed;
 
     void Start()
     {
-        var mat = Resources.Load<Material>(MaterialName);
-        if (mat == null)
+        if (refSpeed <= 0f || minSpeed < 0f || maxStep <= 0f ||
+            minVertexDistance <= 0f || wakeWidth <= 0f || lifetime <= 0f)
         {
-            Debug.LogError($"WakeEmitter: material '{MaterialName}' not found in " +
-                           "Assets/Resources — disabling. Three emitters without a " +
-                           "material render as magenta; better to show nothing.");
+            Debug.LogError("WakeEmitter: invalid calibration — disabling.");
             enabled = false;
             return;
         }
 
-        _hull = FindPart("Hull");
-        _bowNose = FindPart("BowNose");
+        var src = Resources.Load<Material>(MaterialName);
+        if (src == null)
+        {
+            Debug.LogError($"WakeEmitter: material '{MaterialName}' not found — disabling.");
+            enabled = false;
+            return;
+        }
+
         _rudder = FindPart("Rudder");
-        _actuator = GetComponent<ActuatorAnimator>();
-        if (_actuator == null)
-            Debug.LogWarning("WakeEmitter: no ActuatorAnimator on this object — " +
-                             "rudder swirl disabled, wake and bow unaffected.");
+        if (_rudder == null)
+        {
+            Debug.LogError("WakeEmitter: 'Rudder' not found — disabling.");
+            enabled = false;
+            return;
+        }
 
+        _mat = new Material(src) { name = MaterialName + " (runtime)" };
+        _foam = BuildFoamTexture(FoamTextureWidth, FoamTextureHeight);
+        if (!_mat.HasProperty(FoamTextureProperty))
+        {
+            Debug.LogError($"WakeEmitter: material property '{FoamTextureProperty}' " +
+                           "not found — disabling.");
+            enabled = false;
+            return;
+        }
+        _mat.SetTexture(FoamTextureProperty, _foam);
+
+        _trail = MakeTrail();
         _lastPos = transform.position;
-
-        // Étalement latéral large et vitesse initiale faible : le sillage
-        // s'ouvre en V derrière la coque au lieu d'être un jet.
-        _wake = MakeSystem("WakeParticles", mat, spread: 35f, speed: 0.25f);
-        _bow = MakeSystem("BowParticles", mat, spread: 25f, speed: 0.6f);
-        _swirl = MakeSystem("RudderParticles", mat, spread: 15f, speed: 0.4f);
+        PlaceTrail();
+        _trail.Clear();
     }
 
     void Update()
     {
-        // Vitesse horizontale uniquement : quand la houle arrivera (PR #35), le
-        // pilonnement ne doit pas se lire comme de la vitesse et déclencher du
-        // sillage sur un bateau à l'arrêt.
         Vector3 delta = transform.position - _lastPos;
         _lastPos = transform.position;
         delta.y = 0f;
-        float instant = Time.deltaTime > 0f ? delta.magnitude / Time.deltaTime : 0f;
-        _speed = Mathf.Lerp(_speed, instant,
-                            smoothing > 0f ? Time.deltaTime / smoothing : 1f);
+        PlaceTrail();
 
-        float helm = _actuator != null ? _actuator.RudderAngle : 0f;
+        if (delta.magnitude > maxStep)
+        {
+            _speed = 0f;
+            _trail.emitting = false;
+            _trail.Clear();
+            return;
+        }
 
-        Place(_wake, _hull);
-        Place(_bow, _bowNose);
-        Place(_swirl, _rudder);
+        float instant = Time.deltaTime > 0f
+            ? delta.magnitude / Time.deltaTime
+            : 0f;
+        float blend = smoothing > 0f
+            ? Mathf.Clamp01(Time.deltaTime / smoothing)
+            : 1f;
+        _speed = Mathf.Lerp(_speed, instant, blend);
 
-        // Ancrage introuvable → cet émetteur reste muet. Sans ce garde il
-        // cracherait des particules à l'origine du prefab, ce qui est pire
-        // qu'un effet manquant : ça ressemble à un bug de rendu.
-        SetRate(_wake, _hull != null
-            ? WakeMath.WakeRate(_speed, refSpeed, wakeRate) : 0f);
-        SetRate(_bow, _bowNose != null
-            ? WakeMath.BowRate(_speed, refSpeed, bowRate) : 0f);
-        SetRate(_swirl, _rudder != null
-            ? WakeMath.RudderRate(_speed, refSpeed, helm, maxRudderDeg, rudderRate) : 0f);
+        _trail.widthMultiplier = WakeMath.WakeWidth(_speed, refSpeed, wakeWidth);
+        _trail.emitting = _speed >= minSpeed && _trail.widthMultiplier > 0f;
     }
 
-    // Suit la partie en x/z mais reste à la flottaison : c'est le clamp qui
-    // empêche le sillage de décoller quand la coque se couche.
-    void Place(ParticleSystem ps, Transform anchor)
+    TrailRenderer MakeTrail()
     {
-        if (ps == null || anchor == null) return;
-        Vector3 p = anchor.position;
-        p.y = seaLevel;
-        ps.transform.position = p;
-    }
-
-    static void SetRate(ParticleSystem ps, float rate)
-    {
-        if (ps == null) return;
-        var emission = ps.emission;
-        emission.rateOverTime = rate;
-    }
-
-    ParticleSystem MakeSystem(string name, Material mat, float spread, float speed)
-    {
-        var go = new GameObject(name);
+        var go = new GameObject("WakeTrail");
         go.transform.SetParent(transform, worldPositionStays: false);
-        var ps = go.AddComponent<ParticleSystem>();
+        var trail = go.AddComponent<TrailRenderer>();
+        trail.material = _mat;
+        trail.alignment = LineAlignment.TransformZ;
+        trail.textureMode = LineTextureMode.Tile;
+        trail.generateLightingData = true;
+        trail.receiveShadows = false;
+        trail.time = lifetime;
+        trail.minVertexDistance = minVertexDistance;
+        trail.widthMultiplier = 0f;
+        trail.widthCurve = new AnimationCurve(
+            new Keyframe(0f, 1f),
+            new Keyframe(0.75f, 0.65f),
+            new Keyframe(1f, 0.2f));
+        trail.numCornerVertices = 2;
+        trail.numCapVertices = 2;
+        trail.emitting = false;
 
-        var main = ps.main;
-        main.simulationSpace = ParticleSystemSimulationSpace.World;
-        main.startLifetime = lifetime;
-        main.startSize = particleSize;
-        main.startSpeed = speed;
-        main.maxParticles = 2000;
-        main.playOnAwake = true;
+        var gradient = new Gradient();
+        gradient.SetKeys(
+            new[] {
+                new GradientColorKey(Color.white, 0f),
+                new GradientColorKey(Color.white, 1f)
+            },
+            new[] {
+                new GradientAlphaKey(0f, 0f),
+                new GradientAlphaKey(0.55f, 0.15f),
+                new GradientAlphaKey(0.8f, 1f)
+            });
+        trail.colorGradient = gradient;
+        return trail;
+    }
 
-        var emission = ps.emission;
-        emission.rateOverTime = 0f;   // muet tant que le bateau ne bouge pas
+    void PlaceTrail()
+    {
+        Vector3 p = _rudder.position;
+        p.y = seaLevel + surfaceOffset;
+        _trail.transform.SetPositionAndRotation(p, FlatRotation);
+    }
 
-        var shape = ps.shape;
-        shape.shapeType = ParticleSystemShapeType.Cone;
-        shape.angle = spread;
-        shape.radius = 0.05f;
+    static Texture2D BuildFoamTexture(int width, int height)
+    {
+        var tex = new Texture2D(width, height, TextureFormat.RGBA32, mipChain: true);
+        for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+            {
+                float u = (x + 0.5f) / width;
+                float v = (y + 0.5f) / height;
+                float left = Band(v, 0.22f, 0.16f);
+                float right = Band(v, 0.78f, 0.16f);
+                float breakup = Mathf.Clamp01(
+                    0.55f +
+                    0.25f * Mathf.Sin(2f * Mathf.PI * (3f * u + v)) +
+                    0.20f * Mathf.Sin(2f * Mathf.PI * (7f * u - 2f * v)));
+                float edges = Mathf.Max(left, right) *
+                    Mathf.SmoothStep(0.15f, 0.85f, breakup);
+                float centre = 0.10f * Band(v, 0.5f, 0.30f) *
+                    (0.5f + 0.5f * Mathf.Sin(2f * Mathf.PI * 5f * u));
+                float a = Mathf.Clamp01(edges + centre);
+                a = a * a * (3f - 2f * a);
+                tex.SetPixel(x, y, new Color(a, a, a, a));
+            }
+        tex.Apply(updateMipmaps: true, makeNoLongerReadable: false);
+        tex.wrapMode = TextureWrapMode.Repeat;
+        tex.filterMode = FilterMode.Bilinear;
+        return tex;
+    }
 
-        ps.GetComponent<ParticleSystemRenderer>().material = mat;
-        return ps;
+    static float Band(float value, float centre, float halfWidth)
+    {
+        return Mathf.Clamp01(1f - Mathf.Abs(value - centre) / halfWidth);
+    }
+
+    void OnDestroy()
+    {
+        if (_mat != null) Destroy(_mat);
+        if (_foam != null) Destroy(_foam);
     }
 
     Transform FindPart(string name)
     {
         foreach (var t in GetComponentsInChildren<Transform>(true))
             if (t.name == name) return t;
-        Debug.LogWarning($"WakeEmitter: '{name}' not found under {transform.name} — " +
-                         "that emitter stays silent, the others are unaffected.");
         return null;
     }
 }
