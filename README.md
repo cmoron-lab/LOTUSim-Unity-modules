@@ -12,7 +12,7 @@
 
 
 ## Requirements / Setup
-- **Unity** `2023.1.20f1` (Regatta production branch: HDRP `15.0.7`)
+- **Unity** `2023.1.20f1` (`feature/regatta-scenario`: HDRP `15.0.7`)
 - **Multi-Users** `PUN2 - Photon Unity Networking 2` (already in the git) 
 - **Leap Motion** (works on Linux and Windows) An `Ultraleap Hand Tracking Camera` 
 You will need a computer that meets the [Tracking Requirements](https://www.ultraleap.com/gemini-downloads/?_gl=1*1p21y34*_ga*MjA3MTg2NzM3NS4xNzQ1ODk1Mjky*_ga_5G8B19JLWG*czE3NTAzOTQ1ODQkbzEwJGcwJHQxNzUwMzk0NTg0JGo2MCRsMCRoMA..) and have the `[Ultraleap Hand Tracking Software (V5.2+)]`(https://www.ultraleap.com/downloads/) installed (for this project, the **Leap Motion Controller** have been used) 
