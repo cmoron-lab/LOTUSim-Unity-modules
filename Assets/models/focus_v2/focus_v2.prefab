@@ -32,6 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 146780327528693173}
+  - {fileID: 1575912490983470719}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3738984054295546491
@@ -59,7 +60,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1556450931131639875}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4597a188350e823369f526eabd1cb2a4, type: 3}
   m_Name: 
@@ -74,6 +75,170 @@ MonoBehaviour:
   wakeAngle: 19.5
   projectorDepth: 1
   smoothing: 0.15
+--- !u!1 &7193113535424491025
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9198147084789908676}
+  - component: {fileID: 6273485516391575104}
+  m_Layer: 0
+  m_Name: FoamRight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9198147084789908676
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7193113535424491025}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.5771452, z: 0, w: 0.81664157}
+  m_LocalPosition: {x: -0.8483, y: 0, z: 0.3005}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1575912490983470719}
+  m_LocalEulerAnglesHint: {x: 0, y: -70.5, z: 0}
+--- !u!114 &6273485516391575104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7193113535424491025}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0050ecd2d32680645848edd91f37442d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  type: 0
+  regionSize: {x: 0.12, y: 0.18}
+  texture: {fileID: 0}
+  surfaceFoamDimmer: 0
+  deepFoamDimmer: 0
+  scaleMode: 0
+--- !u!1 &8219223478159688423
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5277979514146402363}
+  - component: {fileID: 3785863951678222279}
+  m_Layer: 0
+  m_Name: FoamLeft
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5277979514146402363
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8219223478159688423}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.5771452, z: 0, w: 0.81664157}
+  m_LocalPosition: {x: -0.8483, y: 0, z: -0.3005}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1575912490983470719}
+  m_LocalEulerAnglesHint: {x: 0, y: 70.5, z: 0}
+--- !u!114 &3785863951678222279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8219223478159688423}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0050ecd2d32680645848edd91f37442d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  type: 0
+  regionSize: {x: 0.12, y: 0.18}
+  texture: {fileID: 0}
+  surfaceFoamDimmer: 0
+  deepFoamDimmer: 0
+  scaleMode: 0
+--- !u!1 &9160413465376791733
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1575912490983470719}
+  - component: {fileID: 4872159683074421521}
+  m_Layer: 0
+  m_Name: NativeFoamWake
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1575912490983470719
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9160413465376791733}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.425, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5277979514146402363}
+  - {fileID: 9198147084789908676}
+  m_Father: {fileID: 8166563492264476222}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4872159683074421521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9160413465376791733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6947fd6518794a1096da7b9afd62a190, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  refSpeed: 0.8
+  minSpeed: 0.04
+  maxStep: 0.25
+  minWakePeriod: 0.35
+  maxWakePeriod: 0.8
+  minWakeLength: 0.25
+  maxWakeLength: 1.3
+  wakeAngle: 19.5
+  wakeBrushSize: {x: 0.12, y: 0.18}
+  maxDimmer: 0.75
+  smoothing: 0.15
+  sternFoamSize: {x: 0.16, y: 0.34}
+  sternFoamDimmer: 0.22
+  bowFoamSize: {x: 0.28, y: 0.5}
+  bowFoamDimmer: 0.25
+  bowWaveSize: {x: 1, y: 2}
+  bowWaveDepth: 0.12
+  bowWaveElevation: 0.1
 --- !u!1001 &397388324452538974
 PrefabInstance:
   m_ObjectHideFlags: 0

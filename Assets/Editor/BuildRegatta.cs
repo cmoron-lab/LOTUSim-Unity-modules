@@ -34,6 +34,14 @@ public static class BuildRegatta
     }
 #endif
 
+#if UNITY_EDITOR_WIN
+    [MenuItem("LOTUSim/Build Regatta (Windows)")]
+    public static void Build()
+    {
+        BuildFor(BuildTarget.StandaloneWindows64, "Builds/Regatta/Regatta.exe");
+    }
+#endif
+
     static void BuildFor(BuildTarget target, string locationPathName)
     {
         var options = new BuildPlayerOptions

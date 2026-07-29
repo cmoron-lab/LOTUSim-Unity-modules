@@ -1,12 +1,15 @@
 <linker>
   <assembly fullname="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
     <type fullname="ActuatorAnimator" preserve="all" />
+    <type fullname="NativeFoamWakeController" preserve="all" />
+    <type fullname="WakeEmitter" preserve="all" />
   </assembly>
   <assembly fullname="Unity.Addressables, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" preserve="all">
     <type fullname="UnityEngine.AddressableAssets.Addressables" preserve="all" />
   </assembly>
   <assembly fullname="Unity.RenderPipelines.HighDefinition.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
     <type fullname="UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData" preserve="all" />
+    <type fullname="UnityEngine.Rendering.HighDefinition.WaterFoamGenerator" preserve="all" />
     <type fullname="UnityEngine.Rendering.HighDefinition.FrameSettings" preserve="nothing" serialized="true" />
     <type fullname="UnityEngine.Rendering.HighDefinition.FrameSettingsOverrideMask" preserve="nothing" serialized="true" />
     <type fullname="UnityEngine.Rendering.HighDefinition.HDPhysicalCamera" preserve="nothing" serialized="true" />
