@@ -33,13 +33,19 @@ public static class WakeMath
             2f * Mathf.PI * speed / 9.81f, minPeriod, maxPeriod);
     }
 
+    // Rejects a teleport, and returns 0 to say "no usable measurement".
+    // The threshold is a SPEED on purpose. It used to be a distance per frame,
+    // which is the same test only while the frame time is what it was calibrated
+    // on: 0.25 m means 12.5 m/s at 50 fps but 0.5 m/s at 2 fps, and a 0.44 m/s
+    // boat then trips it on every frame the renderer falls behind the pose
+    // stream. Teleport detection must not depend on how fast the machine draws.
     public static float MotionSpeed(
-        float distance, float deltaTime, float maxStep)
+        float distance, float deltaTime, float maxSpeed)
     {
-        if (distance <= 0f || deltaTime <= 0f ||
-            maxStep <= 0f || distance > maxStep)
+        if (distance <= 0f || deltaTime <= 0f || maxSpeed <= 0f)
             return 0f;
-        return distance / deltaTime;
+        float speed = distance / deltaTime;
+        return speed > maxSpeed ? 0f : speed;
     }
 
     public static bool ShouldEmit(

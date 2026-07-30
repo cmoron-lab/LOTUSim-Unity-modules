@@ -8,7 +8,7 @@ public class NativeFoamWakeController : MonoBehaviour
     // scenario; use a shared pool before exceeding HDRP's global limit of 64.
     public float refSpeed = 0.8f;
     public float minSpeed = 0.04f;
-    public float maxStep = 0.25f;
+    public float maxSpeed = 12.5f;   // teleport cutoff: 0.25 m per 20 ms frame
     public float minWakePeriod = 0.35f;
     public float maxWakePeriod = 0.8f;
     public float minWakeLength = 0.25f;
@@ -51,7 +51,7 @@ public class NativeFoamWakeController : MonoBehaviour
 
     void Start()
     {
-        if (refSpeed <= 0f || minSpeed < 0f || maxStep <= 0f ||
+        if (refSpeed <= 0f || minSpeed < 0f || maxSpeed <= 0f ||
             minWakePeriod <= 0f || maxWakePeriod < minWakePeriod ||
             minWakeLength < 0f || maxWakeLength < minWakeLength ||
             wakeAngle < 0f || wakeAngle >= 90f ||
@@ -106,10 +106,12 @@ public class NativeFoamWakeController : MonoBehaviour
 
         float distance = delta.magnitude;
         float instant = WakeMath.MotionSpeed(
-            distance, Time.deltaTime, maxStep);
-        if (distance > maxStep)
+            distance, Time.deltaTime, maxSpeed);
+        if (distance > 0f && instant <= 0f)   // rejected as a teleport
         {
-            _speed = 0f;
+            // Keep _speed: a rejected sample is a missing measurement, not a stop.
+            // Zeroing it extinguished the foam whenever the renderer fell behind
+            // the pose stream, and the boat then read as physically stopped.
             StopCrest();
             distance = 0f;
         }

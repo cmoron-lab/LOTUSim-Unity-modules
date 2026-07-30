@@ -26,7 +26,7 @@ public class ActuatorAnimator : MonoBehaviour
     public float rudderSign = 1f;    // flip live if the rudder kicks the wrong way
     public float windFromDeg = 0f;
     public float windSpeed = 3f;
-    public float maxPoseStep = 0.25f;
+    public float maxPoseSpeed = 12.5f;   // teleport cutoff: 0.25 m per 20 ms frame
     public float velocitySmoothing = 0.15f;
     public float tackLuffTime = 0.65f;
     public float flutterHz = 4f;
@@ -120,12 +120,15 @@ public class ActuatorAnimator : MonoBehaviour
         Vector3 delta = transform.position - _lastPosition;
         _lastPosition = transform.position;
         delta.y = 0f;
-        if (delta.magnitude > maxPoseStep)
-            _boatVelocity = Vector3.zero;
-        else
+        // A rejected sample is a MISSING measurement, not a stop. Zeroing here made
+        // the sails go slack exactly when the machine fell behind -- and since the
+        // wake collapses on the same evidence, the boat read as physically stopped
+        // while its hull kept making way. Keep the last smoothed velocity instead.
+        float instant = Time.deltaTime > 0f ? delta.magnitude / Time.deltaTime : 0f;
+        if (instant > 0f && instant <= maxPoseSpeed)
             _boatVelocity = Vector3.Lerp(
                 _boatVelocity,
-                Time.deltaTime > 0f ? delta / Time.deltaTime : Vector3.zero,
+                delta / Time.deltaTime,
                 velocitySmoothing > 0f
                     ? Mathf.Clamp01(Time.deltaTime / velocitySmoothing)
                     : 1f);

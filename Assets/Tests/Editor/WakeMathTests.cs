@@ -51,16 +51,16 @@ public class WakeMathTests
             expected, WakeMath.WakePeriod(speed, 0.25f, 0.8f), Eps);
     }
 
-    [TestCase(0f, 0.02f, 0.25f, 0f)]
-    [TestCase(0.01f, 0.02f, 0.25f, 0.5f)]
-    [TestCase(0.3f, 0.02f, 0.25f, 0f)]
-    [TestCase(0.01f, 0f, 0.25f, 0f)]
+    [TestCase(0f, 0.02f, 12.5f, 0f)]
+    [TestCase(0.01f, 0.02f, 12.5f, 0.5f)]
+    [TestCase(0.3f, 0.02f, 12.5f, 0f)]
+    [TestCase(0.01f, 0f, 12.5f, 0f)]
     public void MotionSpeedRejectsInvalidAndTeleportSteps(
-        float distance, float deltaTime, float maxStep, float expected)
+        float distance, float deltaTime, float maxSpeed, float expected)
     {
         Assert.AreEqual(
             expected,
-            WakeMath.MotionSpeed(distance, deltaTime, maxStep),
+            WakeMath.MotionSpeed(distance, deltaTime, maxSpeed),
             Eps);
     }
 
