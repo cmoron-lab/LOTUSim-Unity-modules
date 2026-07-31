@@ -96,6 +96,13 @@ public class NativeFoamWakeController : MonoBehaviour
         _lastPosition = _boat.position;
         _forward = CurrentForward(_boat.right);
         UpdateBowEffects(_forward, 0f);
+
+        // ponytail: disable after a full Start rather than skip building the
+        // foam objects, so a later re-enable (RenderBudget toggling fx back on)
+        // needs no re-init path -- the teleport rejection in Update() already
+        // absorbs the stale _lastPosition from time spent disabled.
+        if (!RenderBudget.EffectsEnabled)
+            gameObject.SetActive(false);
     }
 
     void Update()

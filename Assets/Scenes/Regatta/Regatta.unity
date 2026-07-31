@@ -7192,6 +7192,7 @@ GameObject:
   - component: {fileID: 740748409}
   - component: {fileID: 740748413}
   - component: {fileID: 740748414}
+  - component: {fileID: 936377594}
   m_Layer: 0
   m_Name: RegattaCam
   m_TagString: Untagged
@@ -7447,6 +7448,18 @@ MonoBehaviour:
   sheetSlewDegS: 25
   sheetPositional: 0
   sheetFollowsBoom: 1
+--- !u!114 &936377594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740748408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97f00a766de82ee4c2c1f1492fe63aed, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1001 &768293354
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9585,7 +9598,7 @@ MonoBehaviour:
   geometryType: 3
   meshRenderers: []
   timeMultiplier: 1
-  cpuSimulation: 1
+  cpuSimulation: 0
   cpuFullResolution: 1
   cpuEvaluateRipples: 0
   customMaterial: {fileID: 0}

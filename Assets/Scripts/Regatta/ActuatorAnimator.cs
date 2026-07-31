@@ -42,6 +42,7 @@ public class ActuatorAnimator : MonoBehaviour
     Vector3 _lastPosition, _boatVelocity;
     float _lastStableSide = 1f, _tackLuffAge, _flutterPhase;
     bool _hasStableSide;
+    bool _sailShapesZeroed;  // RenderBudget fx-off: zero once, not every frame
     Quaternion _boomRest, _sailRest, _rudderRest;
 
     static readonly string[] SailShapeNames = {
@@ -178,6 +179,20 @@ public class ActuatorAnimator : MonoBehaviour
         if (_boom) _boom.localRotation = sailRot * _boomRest;
         if (_mainsail) _mainsail.localRotation = sailRot * _sailRest;
         if (_rudder) _rudder.localRotation = Quaternion.AngleAxis(_rudderAngle, Vector3.up) * _rudderRest;
+
+        // RenderBudget fx-off: skip the pressure math and the 8 SetBlendShapeWeight
+        // calls it feeds every frame -- write them to 0 once instead, not repeatedly.
+        if (!RenderBudget.EffectsEnabled)
+        {
+            if (!_sailShapesZeroed)
+            {
+                ApplySailShapes(_mainsailRenderer, _mainsailShapes, 0f, Vector2.zero, side);
+                ApplySailShapes(_jibRenderer, _jibShapes, 0f, Vector2.zero, side);
+                _sailShapesZeroed = true;
+            }
+            return;
+        }
+        _sailShapesZeroed = false;
 
         _tackLuffAge += Time.deltaTime;
         float tackLuff = tackLuffTime > 0f
