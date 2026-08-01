@@ -16,7 +16,11 @@ public class RegattaHud : MonoBehaviour
     ActuatorAnimator _anim;
     Transform _boat;
     Vector3 _lastPos;
-    float _speed;                 // m/s, EMA-smoothed
+    // 0.33 s is what the old fixed 0.05 per-frame factor amounted to at 60 fps:
+    // same feel where it used to work, frame-rate independent everywhere else.
+    const float SpeedSmoothingSeconds = 0.33f;
+
+    float _speed;                 // m/s, EMA-smoothed over SpeedSmoothingSeconds
     float _heading, _twaSigned;   // deg; TWA sign = which side the wind is on
     GUIStyle _panel, _tag, _num, _sub;
     Texture2D _bg;
@@ -34,8 +38,17 @@ public class RegattaHud : MonoBehaviour
         Vector3 d = _boat.position - _lastPos;
         _lastPos = _boat.position;
         d.y = 0f;
+        // Smooth over a duration, not over a frame count. A fixed per-frame factor
+        // is a time constant divided by the frame rate: 0.05 was 0.33 s at 60 fps
+        // and became 4 s at 5 fps, so the one number a person reads to judge
+        // whether the boat is sailing went to 0.00 exactly when the machine
+        // struggled -- while the simulation was doing a healthy 0.37 m/s. The
+        // renderer may crawl; the instrument must not lie about it.
         if (Time.deltaTime > 0f)
-            _speed = Mathf.Lerp(_speed, d.magnitude / Time.deltaTime, 0.05f);
+            _speed = Mathf.Lerp(
+                _speed,
+                d.magnitude / Time.deltaTime,
+                Mathf.Clamp01(Time.deltaTime / SpeedSmoothingSeconds));
 
         Vector3 bow = _anim.BowAxis;
         if (bow != Vector3.zero)
